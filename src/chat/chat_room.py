@@ -94,6 +94,7 @@ class ChatRoom:
                 if self.current_round < self.max_rounds:
                     self.last_round_history = self.current_round_history[self.current_round - 1]
                     self.current_round += 1
+                    print(f"\n=== Starting Round {self.current_round}/{self.max_rounds} ===")
                     round_header = (
                         f"[Round {self.current_round}/{self.max_rounds}]"
                         + (" - Final Round! Please provide your concluding thoughts."
