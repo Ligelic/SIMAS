@@ -1,3 +1,4 @@
+import re
 from typing import List, Dict
 from datetime import datetime
 from .message import Message
@@ -34,26 +35,22 @@ class ChatRoom:
             next_index = current_index + 1
             
             if next_index < len(self.agents):
-                # Combine previous messages in this round with current message
+                # Get messages from current round only
                 round_start_index = len(self.messages) - current_index - 1
                 round_messages = self.messages[max(0, round_start_index):]
-                combined_content = "\n".join([
-                    f"{msg.sender.name}: {msg.content}" 
-                    for msg in round_messages
-                ])
                 
-                # Add round information to message
-                round_info = (
-                    f"[Round {self.current_round}/{self.max_rounds}]"
-                    f"{' - Final Round! Please provide your concluding thoughts.' if self.current_round == self.max_rounds else ''}"
-                )
-                combined_content = combined_content.removeprefix(f"\n{round_info}\nPrevious messages in this round:\n")
-                # Send combined messages to next agent
+                # Format round header
+                round_info = self._format_round_header()
+                
+                # Format messages without redundancy
+                combined_content = self.format_round_messages(round_messages)
+                
+                # Send to next agent
                 next_agent = self.agents[next_index]
                 self.send_direct_message(
                     sender=message.sender,
                     recipient=next_agent,
-                    content=f"\n{round_info}\nPrevious messages in this round:\n{combined_content}"
+                    content=f"{round_info}\n{combined_content}"
                 )
             
             # If this was the last agent in the round
@@ -68,10 +65,7 @@ class ChatRoom:
                     
                     # Send last round's messages to first agent
                     round_messages = self.messages[-len(self.agents):]
-                    combined_content = "\n".join([
-                        f"{msg.sender.name}: {msg.content}" 
-                        for msg in round_messages
-                    ])
+                    combined_content = self.format_round_messages(round_messages)
                     
                     round_info = (
                         f"[Round {self.current_round}/{self.max_rounds}]"
@@ -111,3 +105,41 @@ class ChatRoom:
         )
         self.messages.append(message)
         recipient.receive_message(message)
+
+    def format_round_messages(self, messages: List[Message]) -> str:
+        """Format messages without redundant prefixes and nested content."""
+        formatted_messages = []
+        for msg in messages:
+            # Extract the actual content without nested prefixes
+            content = self._extract_core_content(msg.content)
+            if content.startswith(f"{msg.sender.name}:"):
+                content = content.replace(f"{msg.sender.name}:", "", 1).strip()
+            formatted_messages.append(f"{msg.sender.name}: {content}")
+        return "\n".join(formatted_messages)
+
+    def _extract_core_content(self, content: str) -> str:
+        """Extract the core message content by removing nested prefixes and redundant round information."""
+        # Remove common prefixes that cause nesting
+        prefixes_to_remove = [
+            r'\[Round \d+/\d+\].*?\n',
+            r'Previous (?:round\'s )?messages:?\n',
+            r'Previous messages in this round:\n',
+            r'Context from previous messages:\n'
+        ]
+        
+        result = content
+        for prefix in prefixes_to_remove:
+            result = re.sub(prefix, '', result)
+        
+        # If there are multiple newlines, reduce to single newline
+        result = re.sub(r'\n+', '\n', result)
+        return result.strip()
+
+    def _format_round_header(self) -> str:
+        """Create consistent round header format."""
+        final_round_suffix = (
+            " - Final Round! Please provide your concluding thoughts."
+            if self.current_round == self.max_rounds 
+            else ""
+        )
+        return f"[Round {self.current_round}/{self.max_rounds}]{final_round_suffix}"

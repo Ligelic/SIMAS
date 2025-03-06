@@ -8,6 +8,8 @@ class LLMAgent(Agent):
         super().__init__(name, personality, description)
         self.llm_service = LLMService()
         self.context_window: List[dict] = []
+        self.current_round = 1
+        self.max_rounds = 3
         
     def format_beliefs(self) -> str:
         return ", ".join([f"{belief.thought} (confidence: {belief.confidence})" 
@@ -49,7 +51,7 @@ class LLMAgent(Agent):
             else f"Context from previous messages:\n{message.content}"
         )
         
-        return f"""You are {self.name}. Here is your description:
+        prompt = f"""You are {self.name}. Here is your description:
 {self.description}
 
 Here are some thoughts you might have right now, along with your level of belief in them:
@@ -86,9 +88,12 @@ After providing the Reflect Result, Relationship Change, and Belief Change, plea
 
 New message received: {message.content} Sender: {message.sender.name}
 """
-# You should summarize and reflect on whether your history of actions was able to achieve your goal in one sentence. Follow "### Reflect Result:" with no "\\n" in your response.
-# You should update your relationships with all other characters based on your personal description and action history, up or down by up to 0.1 points, and respond after "### Relationship Change:". Please use commas "," to link ratings of relationships between different roles.
-# Based on your personal description and history of actions, please update your Belief level for all ideas, up or down by a maximum of 0.1 points, and reply after "### Belief Change:".
+
+        if self.current_round == self.max_rounds:
+            prompt += "Please state your final answer choice (A, B, C, or D) with explanation."
+
+        return prompt
+
     def process_llm_response(self, response: str) -> str:
         parts = response.split("###")
         actual_response = ""
@@ -175,7 +180,8 @@ New message received: {message.content} Sender: {message.sender.name}
                 "sender": message.sender.name,
                 "content": message.content
             })
-            
+            self.current_round = chat_room.current_round
+            self.max_rounds = chat_room.max_rounds
             prompt = self.generate_prompt(message)
             full_response = self.llm_service.get_response(prompt)
             print(f"\n{self.name}'s full response:")

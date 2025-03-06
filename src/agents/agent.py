@@ -57,10 +57,28 @@ class Agent:
         new_confidence = max(0.0, min(1.0, self.beliefs[thought].confidence + confidence_change))
         self.beliefs[thought].confidence = new_confidence
 
-    def update_relationship(self, target_name: str, score_change: float):
+    def update_relationship(self, target_name: str, score_change: float, reason: str = ""):
+        """Update relationship with another agent with justification."""
         if target_name not in self.relationships:
             self.relationships[target_name] = Relationship(target_name)
-        new_score = max(-1.0, min(1.0, self.relationships[target_name].score + score_change))
+            
+        # Calculate weighted score change based on personality
+        personality_multiplier = {
+            Personality.FRIENDLY: 1.2,    # More likely to form positive relationships
+            Personality.SKEPTICAL: 0.8,   # More reserved in relationship building
+            Personality.NEUTRAL: 1.0,     # Standard relationship building
+            Personality.AGGRESSIVE: 0.6   # More difficult to build relationships with
+        }.get(self.personality, 1.0)
+        
+        adjusted_change = score_change * personality_multiplier
+        new_score = max(-1.0, min(1.0, self.relationships[target_name].score + adjusted_change))
+        
+        # Record the reason for relationship change if provided
+        if reason:
+            self.relationships[target_name].history.append(
+                f"Score changed by {adjusted_change:.2f} - Reason: {reason}"
+            )
+            
         self.relationships[target_name].score = new_score
 
     def reflect(self) -> str:
