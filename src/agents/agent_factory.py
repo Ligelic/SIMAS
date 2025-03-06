@@ -18,16 +18,22 @@ Please provide the following in JSON format:
 2. personality: One of [FRIENDLY, SKEPTICAL, NEUTRAL]
 3. description: A brief description in Chinese of the agent's characteristics and role in discussions
 4. expertise: The agent's main strength in mathematical problem solving
+5. beliefs: List of 3-5 beliefs relevant to mathematical problem solving that this agent holds
 
 Example output:
 {{
     "name": "Alice",
     "personality": "FRIENDLY",
     "description": "A warm and friendly assistant who excels at explaining complex concepts through diagrams",
-    "expertise": "visualization and explanation"
+    "expertise": "visualization and explanation",
+    "beliefs": [
+        "Clear visualization aids understanding",
+        "Multiple approaches should be considered",
+        "Collaboration improves problem solving"
+    ]
 }}
 
-Make sure each agent has a unique role and expertise that complements the others."""
+Make sure each agent has unique beliefs that align with their role and expertise."""
 
         response = self.llm_service.get_response(prompt)
         try:
@@ -37,14 +43,24 @@ Make sure each agent has a unique role and expertise that complements the others
                 "name": f"Agent_{index}",
                 "personality": "NEUTRAL",
                 "description": f"第{index}号数学讨论者，擅长逻辑分析",
-                "expertise": "logical analysis"
+                "expertise": "logical analysis",
+                "beliefs": [
+                    "Systematic approach leads to solutions",
+                    "Every problem has a logical structure",
+                    "Mathematical rigor is essential"
+                ]
             }
 
-    def create_agent(self, name: str, personality: Personality, description: str) -> Agent:
+    def create_agent(self, name: str, personality: Personality, description: str, belief_thoughts: List[str] = None) -> Agent:
         if name in self.agents:
             raise ValueError(f"Agent '{name}' already exists")
             
-        agent = LLMAgent(name=name, personality=personality, description=description)
+        agent = LLMAgent(
+            name=name, 
+            personality=personality, 
+            description=description,
+            belief_thoughts=belief_thoughts
+        )
         self.agents[name] = agent
         return agent
 
@@ -67,7 +83,8 @@ Make sure each agent has a unique role and expertise that complements the others
             agent = self.create_agent(
                 name=agent_info["name"],
                 personality=personalities[agent_info["personality"]],
-                description=f"{agent_info['description']} (专长：{agent_info['expertise']})"
+                description=f"{agent_info['description']} (专长：{agent_info['expertise']})",
+                belief_thoughts=agent_info.get("beliefs", [])
             )
             agents.append(agent)
 

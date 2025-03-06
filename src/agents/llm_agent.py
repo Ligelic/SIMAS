@@ -4,12 +4,17 @@ from utils.llm_service import LLMService
 from chat.message import Message
 
 class LLMAgent(Agent):
-    def __init__(self, name: str, personality: Personality, description: str):
+    def __init__(self, name: str, personality: Personality, description: str, belief_thoughts: List[str] = None):
         super().__init__(name, personality, description)
         self.llm_service = LLMService()
         self.context_window: List[dict] = []
         self.current_round = 1
         self.max_rounds = 3
+        self.belief_thoughts = belief_thoughts or []
+        
+        # Initialize beliefs with provided thoughts
+        for thought in self.belief_thoughts:
+            self.update_belief(thought, 0.5)
         
     def format_beliefs(self) -> str:
         return ", ".join([f"{belief.thought} (confidence: {belief.confidence})" 
