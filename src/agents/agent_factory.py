@@ -10,7 +10,7 @@ class AgentFactory:
         self.llm_service = LLMService()
 
     def _generate_agent_description(self, index: int, total: int) -> dict:
-        prompt = f"""Generate a description for an AI agent that will participate in a group discussion to solve math problems.
+        prompt = f"""Generate a description in English for an AI agent that will participate in a group discussion to solve math problems.
 This is agent {index} of {total} total agents.
 
 Please provide the following in JSON format:
@@ -23,7 +23,7 @@ Example output:
 {{
     "name": "Alice",
     "personality": "FRIENDLY",
-    "description": "一个热情友好的助手，擅长通过图解方式解释复杂概念",
+    "description": "A warm and friendly assistant who excels at explaining complex concepts through diagrams",
     "expertise": "visualization and explanation"
 }}
 

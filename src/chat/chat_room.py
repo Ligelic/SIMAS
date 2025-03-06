@@ -47,13 +47,13 @@ class ChatRoom:
                     f"[Round {self.current_round}/{self.max_rounds}]"
                     f"{' - Final Round! Please provide your concluding thoughts.' if self.current_round == self.max_rounds else ''}"
                 )
-                
+                combined_content = combined_content.removeprefix(f"\n{round_info}\nPrevious messages in this round:\n")
                 # Send combined messages to next agent
                 next_agent = self.agents[next_index]
                 self.send_direct_message(
                     sender=message.sender,
                     recipient=next_agent,
-                    content=f"{round_info}\nPrevious messages in this round:\n{combined_content}"
+                    content=f"\n{round_info}\nPrevious messages in this round:\n{combined_content}"
                 )
             
             # If this was the last agent in the round

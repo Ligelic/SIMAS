@@ -19,6 +19,6 @@ API_BASE_URL = "https://aigptx.top/v1/chat/completions"
 
 # MMLU Dataset Configuration
 MMLU_DATA_PATH = 'data/mmlu'
-DEFAULT_MMLU_SUBJECT = 'mathematics'
+DEFAULT_MMLU_SUBJECT = 'abstract_algebra'
 TOTAL_PROBLEMS_TO_LOAD = 10  # Total number of problems to load from dataset
 PROBLEMS_PER_CHAT = 1  # Number of problems to solve in each chat session

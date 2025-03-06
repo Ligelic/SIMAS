@@ -1,41 +1,46 @@
 from typing import List, Optional
+from datasets import load_dataset
+import datasets
 import pandas as pd
 from .problem_base import Problem, ProblemProvider
 
 class MMLUProblemProvider(ProblemProvider):
-    def __init__(self, subject: str = 'mathematics', total_problems: int = 10):
+    def __init__(self, subject: str = 'abstract_algebra', total_problems: int = 10):
         """
         Initialize MMLU problem provider
         Args:
-            subject: The MMLU subject to load
+            subject: The MMLU subject to load (e.g. 'abstract_algebra')
             total_problems: Total number of problems to load
         """
         self.problems: List[Problem] = []
-        self.used_problems: List[Problem] = []  # Track used problems
+        self.used_problems: List[Problem] = []
         self._load_mmlu_problems(subject, total_problems)
         
     def _load_mmlu_problems(self, subject: str, n_problems: int):
-        # Load MMLU dataset
         try:
-            # Assuming MMLU data is in CSV format with columns: question, A, B, C, D, answer
-            df = pd.read_csv(f'data/mmlu/{subject}_test.csv', encoding='utf-8')
+            # Load MMLU dataset using datasets library
+            config = datasets.DownloadConfig(resume_download=True, max_retries=100) 
+            dataset = load_dataset("cais/mmlu", subject, download_config=config)
             
-            # Take first n_problems
-            df = df.head(n_problems)
+            # Convert test split to dataframe and take first n_problems
+            df = pd.DataFrame(dataset['test'][:n_problems])
             
             for _, row in df.iterrows():
                 # Format question with options
                 question = (
                     f"{row['question']}\n"
-                    f"A) {row['A']}\n"
-                    f"B) {row['B']}\n"
-                    f"C) {row['C']}\n"
-                    f"D) {row['D']}"
+                    f"A) {row['choices'][0]}\n"
+                    f"B) {row['choices'][1]}\n"
+                    f"C) {row['choices'][2]}\n"
+                    f"D) {row['choices'][3]}"
                 )
+                
+                # Convert numeric answer to letter (0->A, 1->B, etc)
+                answer = chr(65 + row['answer'])  # Convert 0->A, 1->B, etc
                 
                 self.problems.append(Problem(
                     question=question,
-                    answer=row['answer'],
+                    answer=answer,
                     metadata={
                         "type": "multiple_choice",
                         "subject": subject
@@ -44,7 +49,6 @@ class MMLUProblemProvider(ProblemProvider):
                 
         except Exception as e:
             print(f"Error loading MMLU dataset: {e}")
-            # Generate sample problem as fallback
             self._generate_sample_problem()
     
     def _generate_sample_problem(self):
