@@ -31,7 +31,7 @@ class ChatRoom:
         msgs = []
         message = Message(
             sender=self.agents[-1],
-            content=self.current_round_history[self.current_round - 1],
+            content= self.messages[0].content + "\n" + self.current_round_history[self.current_round - 1],
             chat_room=self
         )
         msgs.append(message)

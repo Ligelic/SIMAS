@@ -230,6 +230,9 @@ Please synthesize these viewpoints and provide:
 Your summary should be thorough yet concise, and maintain your {self.personality.value} personality.
 
 Please structure your response as:
+### Answer
+[Your final answer for the given problem in accordance with the required form of the problem]
+
 ### Summary
 [Your comprehensive summary]
 
