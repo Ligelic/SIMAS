@@ -35,9 +35,9 @@ def run_chat_session(
     # Store problem for evaluation
     chat_room.metadata['current_problem'] = problem
     chat_room.metadata['problem_provider'] = problem_provider
-    
+    print(f"{problem.question}")
     # Start discussion with problem
-    print(f"\n=== Starting Round 1/{max_rounds} ===")
+    # print(f"\n=== Starting Round 1/{max_rounds} ===")
     chat_manager.send_message(
         room_name=chat_room.name,
         sender=agents[0],
@@ -90,7 +90,7 @@ def main(max_rounds: int = 3, agent_count: int = 3, subject: str = DEFAULT_MMLU_
         session_num += 1
         # Optional: wait for user input before starting next session
         print(f"\nCurrent Accuracy: {problem_provider.get_accuracy():.2%}")
-        input("\nPress Enter to start next problem discussion...")
+        # input("\nPress Enter to start next problem discussion...")
 
 if __name__ == "__main__":
     import argparse

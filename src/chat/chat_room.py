@@ -20,7 +20,7 @@ class ChatRoom:
         if agent not in self.agents:
             self.agents.append(agent)
             self.broadcast_system_message(f"{agent.name} joined the chat room")
-            print(f"{agent.name} joined the chat room")
+            # print(f"{agent.name} joined the chat room")
     
     def remove_agent(self, agent):
         if agent in self.agents:
@@ -95,7 +95,7 @@ class ChatRoom:
                 if self.current_round < self.max_rounds:
                     self.last_round_history = self.current_round_history[self.current_round - 1]
                     self.current_round += 1
-                    print(f"\n=== Starting Round {self.current_round}/{self.max_rounds} ===")
+                    # print(f"\n=== Starting Round {self.current_round}/{self.max_rounds} ===")
                     round_header = (
                         f"[Round {self.current_round}/{self.max_rounds}]"
                         + (" - Final Round! Please provide your concluding thoughts."
@@ -114,8 +114,8 @@ class ChatRoom:
                 else:
                     # Handle final round completion
                     self.is_completed = True
-                    print(f"\n=== Discussion completed after {self.max_rounds} rounds ===")
-                    print("Requesting final summary from first agent...")
+                    # print(f"\n=== Discussion completed after {self.max_rounds} rounds ===")
+                    # print("Requesting final summary from first agent...")
                     
                     final_messages = self._get_current_round_messages()
                     summary_request = Message(
@@ -128,8 +128,8 @@ class ChatRoom:
                     problem = self.metadata.get('current_problem')
                     if problem:
                         is_correct = self.metadata.get('problem_provider').record_answer(problem, final_answer)
-                        print(f"Answer {'correct' if is_correct else 'incorrect'} "
-                            f"(Expected: {problem.answer})")
+                        # print(f"Answer {'correct' if is_correct else 'incorrect'} "
+                        #     f"(Expected: {problem.answer})")
     
     def broadcast_system_message(self, content: str):
         message = Message(sender=None, content=content)

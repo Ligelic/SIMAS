@@ -41,12 +41,12 @@ class Agent:
             self.update_relationship(message.sender.name, 0.05)  # Small positive bump for interaction
             
             # Personality-based response
-            if self.personality == Personality.FRIENDLY:
-                print(f"{self.name} warmly received message from {message.sender.name}: {message.content}")
-            elif self.personality == Personality.SKEPTICAL:
-                print(f"{self.name} cautiously considers message from {message.sender.name}: {message.content}")
-            else:
-                print(f"{self.name} received message from {message.sender.name}: {message.content}")
+            # if self.personality == Personality.FRIENDLY:
+            #     print(f"{self.name} warmly received message from {message.sender.name}: {message.content}")
+            # elif self.personality == Personality.SKEPTICAL:
+            #     print(f"{self.name} cautiously considers message from {message.sender.name}: {message.content}")
+            # else:
+            #     print(f"{self.name} received message from {message.sender.name}: {message.content}")
         # else:
         #     # Handle system messages
         #     if message.content.startswith(".* joined the chat room"):

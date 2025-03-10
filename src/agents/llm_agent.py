@@ -192,8 +192,8 @@ New message received: {message.content} Sender: {message.sender.name}
             self.max_rounds = chat_room.max_rounds
             prompt = self.generate_prompt(message)
             full_response = self.llm_service.get_response(prompt)
-            print(f"\n{self.name}'s full response:")
-            print(full_response)
+            # print(f"\n{self.name}'s full response:")
+            # print(full_response)
             
             # Get actual response content
             actual_response = self.process_llm_response(full_response)
@@ -255,6 +255,6 @@ Please structure your response as:
         summary_response = self.llm_service.get_response(prompt)
         final_answer = self.process_llm_response(summary_response)
         print(f"\n{self.name}'s Final Answer: {final_answer}")
-        print(f"\n{self.name}'s Final Summary:")
+        # print(f"\n{self.name}'s Final Summary:")
         print(summary_response)
         return final_answer
