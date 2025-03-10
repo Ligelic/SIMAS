@@ -256,5 +256,5 @@ Please structure your response as:
         final_answer = self.process_llm_response(summary_response)
         print(f"\n{self.name}'s Final Answer: {final_answer}")
         # print(f"\n{self.name}'s Final Summary:")
-        print(summary_response)
+        # print(summary_response)
         return final_answer

@@ -25,8 +25,8 @@ def run_chat_session(
     print(f"Remaining problems: {problem_provider.get_remaining_count()}")
     
     # Create new chat room for this session
-    chat_room = chat_manager.create_chat_room(f"Session_{session_num}")
-    chat_room.max_rounds = max_rounds
+    chat_room = chat_manager.create_chat_room(f"Session_{session_num}", max_round=max_rounds)
+    # chat_room.max_rounds = max_rounds
     
     # Add agents to room
     for agent in agents:
@@ -100,4 +100,4 @@ if __name__ == "__main__":
     parser.add_argument('--subject', type=str, default=DEFAULT_MMLU_SUBJECT, help='MMLU subject')
     args = parser.parse_args()
     # main(max_rounds=args.rounds, agent_count=args.agents, subject=args.subject)
-    main(max_rounds=3, agent_count=4, subject=args.subject)
+    main(max_rounds=4, agent_count=3, subject=args.subject)

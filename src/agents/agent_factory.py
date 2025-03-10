@@ -9,14 +9,16 @@ class AgentFactory:
         self.agents: Dict[str, Agent] = {}
         self.llm_service = LLMService()
 
-    def _generate_agent_description(self, index: int, total: int) -> dict:
+    def _generate_agent_description(self, index: int, total: int, name: List[str]) -> dict:
         prompt = f"""Generate a description in English for an AI agent that will participate in a group discussion to solve math problems.
 This is agent {index} of {total} total agents.
 
+Existing agent names: {name}
+
 Please provide the following in JSON format:
 1. name: A simple name for the agent (unique from existing agents)
-2. personality: One of [FRIENDLY, SKEPTICAL, NEUTRAL]
-3. description: A brief description in Chinese of the agent's characteristics and role in discussions
+2. personality: One of [FRIENDLY, SKEPTICAL, NEUTRAL, AGGRESSIVE]
+3. description: A brief description in English of the agent's characteristics and role in discussions
 4. expertise: The agent's main strength in mathematical problem solving
 5. beliefs: List of 3-5 beliefs relevant to mathematical problem solving that this agent holds
 
@@ -33,6 +35,7 @@ Example output:
     ]
 }}
 
+Remember to generate descriptions in English.
 Make sure each agent has unique beliefs that align with their role and expertise."""
 
         response = self.llm_service.get_response(prompt)
@@ -67,18 +70,23 @@ Make sure each agent has unique beliefs that align with their role and expertise
     def create_agents(self, count: int) -> List[Agent]:
         """Dynamically create a specified number of agents using LLM"""
         agents = []
+        names = []
         personalities = {
             "FRIENDLY": Personality.FRIENDLY,
             "SKEPTICAL": Personality.SKEPTICAL,
-            "NEUTRAL": Personality.NEUTRAL
+            "NEUTRAL": Personality.NEUTRAL,
+            "AGGRESSIVE": Personality.AGGRESSIVE
         }
 
         for i in range(count):
-            agent_info = self._generate_agent_description(i + 1, count)
-            
+            # print(f"\nGenerating agent {i + 1} of {count}...")
+            agent_info = self._generate_agent_description(i + 1, count, names)
+            if agent_info["name"] not in names:
+                names.append(agent_info["name"])
             # Ensure unique name
             while agent_info["name"] in self.agents:
-                agent_info = self._generate_agent_description(i + 1, count)
+                print(f"Agent name '{agent_info['name']}' already exists. Please provide a unique name.")
+                agent_info = self._generate_agent_description(i + 1, count, names)
             
             agent = self.create_agent(
                 name=agent_info["name"],

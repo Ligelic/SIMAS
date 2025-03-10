@@ -7,11 +7,11 @@ class ChatManager:
     def __init__(self):
         self.chat_rooms: Dict[str, ChatRoom] = {}
         
-    def create_chat_room(self, room_name: str) -> ChatRoom:
+    def create_chat_room(self, room_name: str, max_round: int) -> ChatRoom:
         if room_name in self.chat_rooms:
             raise ValueError(f"Chat room '{room_name}' already exists")
         
-        chat_room = ChatRoom(room_name)
+        chat_room = ChatRoom(room_name, max_round)
         self.chat_rooms[room_name] = chat_room
         log_message(f"Created new chat room: {room_name}")
         return chat_room

@@ -4,14 +4,14 @@ from datetime import datetime
 from .message import Message
 
 class ChatRoom:
-    def __init__(self, name: str):
+    def __init__(self, name: str, round: int = 3):
         self.name = name
         self.agents = []
         self.messages: List[Message] = []
         self.created_at = datetime.now()
         self.metadata: Dict = {}
         self.current_round = 1  # Start from round 1
-        self.max_rounds = 3  # Default value
+        self.max_rounds = round  # Default value
         self.is_completed = False  # Add flag to track completion status
         self.current_round_history = [f"" for i in range(self.max_rounds)]
         self.last_round_history = ''
