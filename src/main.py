@@ -99,4 +99,5 @@ if __name__ == "__main__":
     parser.add_argument('--rounds', type=int, default=3, help='Number of rounds per problem')
     parser.add_argument('--subject', type=str, default=DEFAULT_MMLU_SUBJECT, help='MMLU subject')
     args = parser.parse_args()
-    main(max_rounds=args.rounds, agent_count=args.agents, subject=args.subject)
+    # main(max_rounds=args.rounds, agent_count=args.agents, subject=args.subject)
+    main(max_rounds=3, agent_count=4, subject=args.subject)

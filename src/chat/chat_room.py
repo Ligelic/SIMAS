@@ -20,6 +20,7 @@ class ChatRoom:
         if agent not in self.agents:
             self.agents.append(agent)
             self.broadcast_system_message(f"{agent.name} joined the chat room")
+            print(f"{agent.name} joined the chat room")
     
     def remove_agent(self, agent):
         if agent in self.agents:

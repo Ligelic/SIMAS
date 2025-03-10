@@ -47,9 +47,12 @@ class Agent:
                 print(f"{self.name} cautiously considers message from {message.sender.name}: {message.content}")
             else:
                 print(f"{self.name} received message from {message.sender.name}: {message.content}")
-        else:
-            # Handle system messages
-            print(f"System message received by {self.name}: {message.content}")
+        # else:
+        #     # Handle system messages
+        #     if message.content.startswith(".* joined the chat room"):
+        #         return  # Ignore join messages
+        #     else:
+        #         print(f"System message received by {self.name}: {message.content}")
 
     def update_belief(self, thought: str, confidence_change: float):
         if thought not in self.beliefs:
