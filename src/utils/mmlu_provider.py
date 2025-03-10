@@ -14,6 +14,8 @@ class MMLUProblemProvider(ProblemProvider):
         """
         self.problems: List[Problem] = []
         self.used_problems: List[Problem] = []
+        self.correct_answers = 0
+        self.total_answered = 0
         self._load_mmlu_problems(subject, total_problems)
         
     def _load_mmlu_problems(self, subject: str, n_problems: int):
@@ -68,18 +70,47 @@ class MMLUProblemProvider(ProblemProvider):
         problem = self.problems.pop(0)
         self.used_problems.append(problem)
         return problem
-        
+
+    def record_answer(self, problem: Problem, answer: str) -> bool:
+        """Record an answer and return whether it was correct"""
+        is_correct = self.evaluate_answer(problem, answer)
+        self.total_answered += 1
+        if is_correct:
+            self.correct_answers += 1
+        return is_correct
+    
+    def get_accuracy(self) -> float:
+        """Get current accuracy rate"""
+        if self.total_answered == 0:
+            return 0.0
+        return self.correct_answers / self.total_answered
+
     def evaluate_answer(self, problem: Problem, answer: str) -> bool:
         try:
             # Extract answer from agent's response
             # Looking for pattern like "The answer is [A/B/C/D]" or just "[A/B/C/D]"
+            patterns = [
+            r'(?:^|\s)([A-D])(?:\s|$)',  # Single letter
+            r'(?:^|\s)\(?([A-D])\)',  # Letter in parentheses
+            r'(?:^|\s)([A-D])[.)\s]',  # Letter followed by dot, parenthesis or space
+            r'(?:answer is |选择|答案是|选项)\s*([A-D])',  # Common phrases
+            ]
             import re
-            match = re.search(r"(?:answer is |选择|答案是|选项)?\s*([A-D])", answer, re.IGNORECASE)
-            if not match:
-                return False
+            for pattern in patterns:
+                match = re.search(pattern, answer, re.IGNORECASE)
+                if match:
+                    student_answer = match.group(1).upper()
+                    print(f"Student answer: {student_answer}")
+                    print(f"Correct answer: {problem.answer.upper()}")
+                    return student_answer == problem.answer.upper()
+                    
+            # match = re.search(r"(?:answer is |选择|答案是|选项)?\s*([A-D])", answer, re.IGNORECASE)
+            # if not match:
+            #     return False
                 
-            student_answer = match.group(1).upper()
-            return student_answer == problem.answer.upper()
+            # student_answer = match.group(1).upper()
+            # return student_answer == problem.answer.upper()
+            return False
             
         except Exception as e:
             print(f"Error evaluating answer: {e}")

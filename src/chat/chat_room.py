@@ -123,7 +123,12 @@ class ChatRoom:
                                "including the key points and conclusions from all participants.",
                         chat_room=self
                     )
-                    self.agents[0].receive_final_summary_request(summary_request, final_messages)
+                    final_answer = self.agents[0].receive_final_summary_request(summary_request, final_messages)
+                    problem = self.metadata.get('current_problem')
+                    if problem:
+                        is_correct = self.metadata.get('problem_provider').record_answer(problem, final_answer)
+                        print(f"Answer {'correct' if is_correct else 'incorrect'} "
+                            f"(Expected: {problem.answer})")
     
     def broadcast_system_message(self, content: str):
         message = Message(sender=None, content=content)

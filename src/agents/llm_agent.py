@@ -148,6 +148,9 @@ New message received: {message.content} Sender: {message.sender.name}
                     
             elif part.startswith("Actual Response:"):
                 actual_response = part.replace("Actual Response:", "").strip()
+            
+            elif part.startswith("Answer"):
+                actual_response = part.replace("Answer", "").strip()
         
         # If no actual response was found with the expected prefix
         if not actual_response:
@@ -236,7 +239,7 @@ Your summary should be thorough yet concise, and maintain your {self.personality
 
 Please structure your response as:
 ### Answer
-[Your final answer for the given problem in accordance with the required form of the problem]
+[Your final answer for the given problem in accordance with the required form, such as A, B, C, or D for a multiple-choice question] 
 
 ### Summary
 [Your comprehensive summary]
@@ -247,8 +250,11 @@ Please structure your response as:
 ### Future Implications
 [Brief statement about future implications]"""
 
-    def receive_final_summary_request(self, message: Message, final_round_messages: List[Message]):
+    def receive_final_summary_request(self, message: Message, final_round_messages: List[Message]) -> str:
         prompt = self.generate_final_summary_prompt(message, final_round_messages)
         summary_response = self.llm_service.get_response(prompt)
+        final_answer = self.process_llm_response(summary_response)
+        print(f"\n{self.name}'s Final Answer: {final_answer}")
         print(f"\n{self.name}'s Final Summary:")
         print(summary_response)
+        return final_answer

@@ -31,6 +31,10 @@ def run_chat_session(
     # Add agents to room
     for agent in agents:
         chat_room.add_agent(agent)
+
+    # Store problem for evaluation
+    chat_room.metadata['current_problem'] = problem
+    chat_room.metadata['problem_provider'] = problem_provider
     
     # Start discussion with problem
     print(f"\n=== Starting Round 1/{max_rounds} ===")
@@ -40,8 +44,7 @@ def run_chat_session(
         content=f"Hello everyone! Let's discuss the following problem:\n\n{problem.question}"
     )
     
-    # Store problem for evaluation
-    chat_room.metadata['current_problem'] = problem
+    
     
     return True
 
@@ -77,10 +80,16 @@ def main(max_rounds: int = 3, agent_count: int = 3, subject: str = DEFAULT_MMLU_
         
         if not success:
             print("\nNo more problems available. Discussion sessions completed.")
+            accuracy = problem_provider.get_accuracy()
+            print(f"\nFinal Results:")
+            print(f"Total Problems: {problem_provider.total_answered}")
+            print(f"Correct Answers: {problem_provider.correct_answers}")
+            print(f"Accuracy: {accuracy:.2%}")
             break
             
         session_num += 1
         # Optional: wait for user input before starting next session
+        print(f"\nCurrent Accuracy: {problem_provider.get_accuracy():.2%}")
         input("\nPress Enter to start next problem discussion...")
 
 if __name__ == "__main__":
