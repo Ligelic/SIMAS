@@ -79,6 +79,7 @@ def main(max_rounds: int = 3, agent_count: int = 3, subject: str = DEFAULT_MMLU_
         )
         
         if not success:
+            print(f"Agent Count: {agent_count} | Rounds: {max_rounds}")
             print("\nNo more problems available. Discussion sessions completed.")
             accuracy = problem_provider.get_accuracy()
             print(f"\nFinal Results:")
@@ -100,4 +101,4 @@ if __name__ == "__main__":
     parser.add_argument('--subject', type=str, default=DEFAULT_MMLU_SUBJECT, help='MMLU subject')
     args = parser.parse_args()
     # main(max_rounds=args.rounds, agent_count=args.agents, subject=args.subject)
-    main(max_rounds=4, agent_count=3, subject=args.subject)
+    main(max_rounds=3, agent_count=3, subject=args.subject)

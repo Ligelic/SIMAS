@@ -91,7 +91,7 @@ Make sure each agent has unique beliefs that align with their role and expertise
             agent = self.create_agent(
                 name=agent_info["name"],
                 personality=personalities[agent_info["personality"]],
-                description=f"{agent_info['description']} (专长：{agent_info['expertise']})",
+                description=f"{agent_info['description']} (expertise：{agent_info['expertise']})",
                 belief_thoughts=agent_info.get("beliefs", [])
             )
             agents.append(agent)
