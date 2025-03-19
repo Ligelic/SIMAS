@@ -31,15 +31,15 @@ class LLMAgent(Agent):
         ])
 
     def generate_prompt(self, message: Message) -> str:
-        belief_thoughts = [
-            "AI will benefit humanity",
-            "AI poses risks that need careful consideration",
-            "Collaboration between AI agents is valuable"
-        ]
+        # belief_thoughts = [
+        #     "AI will benefit humanity",
+        #     "AI poses risks that need careful consideration",
+        #     "Collaboration between AI agents is valuable"
+        # ]
         
         # Initialize beliefs if empty
         if not self.beliefs:
-            for thought in belief_thoughts:
+            for thought in self.belief_thoughts:
                 self.update_belief(thought, 0.5)
                 
         chat_room = getattr(message, 'chat_room', None)

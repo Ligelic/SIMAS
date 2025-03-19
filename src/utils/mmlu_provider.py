@@ -87,31 +87,32 @@ class MMLUProblemProvider(ProblemProvider):
 
     def evaluate_answer(self, problem: Problem, answer: str) -> bool:
         try:
-            # Extract answer from agent's response
-            # Looking for pattern like "The answer is [A/B/C/D]" or just "[A/B/C/D]"
-            patterns = [
-            r'(?:^|\s)([A-D])(?:\s|$)',  # Single letter
-            r'(?:^|\s)\(?([A-D])\)',  # Letter in parentheses
-            r'(?:^|\s)([A-D])[.)\s]',  # Letter followed by dot, parenthesis or space
-            r'(?:answer is |选择|答案是|选项)\s*([A-D])',  # Common phrases
-            ]
             import re
+            # First try to find the most specific answer format
+            patterns = [
+                # Match complete answer format "D) content" or "D. content"
+                r'^([A-D])[）).\s].*$',
+                
+                # Match simple option format
+                r'^([A-D])$',
+                
+                # Match letter in parentheses
+                r'^\(?([A-D])\)$',
+            ]
+            
             for pattern in patterns:
-                match = re.search(pattern, answer, re.IGNORECASE)
+                match = re.search(pattern, answer.strip(), re.IGNORECASE)
                 if match:
                     student_answer = match.group(1).upper()
+                    print(f"Pattern matched: {pattern}")
+                    print(f"Answer text: {answer}")
                     print(f"Student answer: {student_answer}")
                     print(f"Correct answer: {problem.answer.upper()}")
                     return student_answer == problem.answer.upper()
                     
-            # match = re.search(r"(?:answer is |选择|答案是|选项)?\s*([A-D])", answer, re.IGNORECASE)
-            # if not match:
-            #     return False
-                
-            # student_answer = match.group(1).upper()
-            # return student_answer == problem.answer.upper()
+            print(f"No valid answer format found in: {answer}")
             return False
-            
+                
         except Exception as e:
             print(f"Error evaluating answer: {e}")
             return False
