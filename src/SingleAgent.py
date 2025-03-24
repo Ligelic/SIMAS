@@ -1,5 +1,6 @@
 from agents.agent_factory import AgentFactory
 from chat.chat_manager import ChatManager
+from utils.ekar_provider import EKARProblemProvider
 from utils.mmlu_provider import MMLUProblemProvider
 from utils.saver import save_evaluation_result
 from config.config import (
@@ -56,6 +57,9 @@ def main_single_agent(subject: str = DEFAULT_MMLU_SUBJECT, problem_count: int = 
         subject=subject,
         total_problems=problem_count
     )
+    # problem_provider = EKARProblemProvider(
+    #     total_problems=problem_count
+    # )
     
     # Create single agent
     agent = agent_factory.create_agents(1, subject=subject)[0]

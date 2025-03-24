@@ -1,6 +1,7 @@
 from agents.agent_factory import AgentFactory
 from chat.chat_manager import ChatManager
 from utils.mmlu_provider import MMLUProblemProvider
+from utils.ekar_provider import EKARProblemProvider
 from utils.saver import save_evaluation_result
 from config.config import (
     DEFAULT_MMLU_SUBJECT, 
@@ -61,6 +62,10 @@ def main(max_rounds: int = 3, agent_count: int = 3, subject: str = DEFAULT_MMLU_
         subject=subject,
         total_problems=problem_count
     )
+
+    # problem_provider = EKARProblemProvider(
+    #     total_problems=problem_count
+    # )
     
     # Generate agents (only once for all sessions)
     agents = agent_factory.create_agents(agent_count, subject=subject)
@@ -112,4 +117,4 @@ if __name__ == "__main__":
     parser.add_argument('--problem_count', type=int, default=TOTAL_PROBLEMS_TO_LOAD, help='Number of problems to load')
     args = parser.parse_args()
     # main(max_rounds=args.rounds, agent_count=args.agents, subject=args.subject)
-    main(max_rounds=3, agent_count=3, subject=args.subject, problem_count=17)
+    main(max_rounds=3, agent_count=5, subject=args.subject, problem_count=17)
