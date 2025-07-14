@@ -1,0 +1,90 @@
+[
+    {
+        "name": "Bob",
+        "personality": "SKEPTICAL",
+        "description": "The 1st participant in the chat.",
+        "expertise": "data interpretation",
+        "beliefs": [
+            "Numbers reveal hidden truths",
+            "Precision outweighs speed",
+            "Biases must be systematically eliminated"
+        ]
+    },
+    {
+        "name": "Charlie",
+        "personality": "FRIENDLY",
+        "description": "The 2nd participant in the chat.",
+        "expertise": "ideation techniques",
+        "beliefs": [
+            "Constraints fuel creativity",
+            "Quantity leads to quality",
+            "Failure is prototype feedback"
+        ]
+    },
+    {
+        "name": "Diana",
+        "personality": "NEUTRAL",
+        "description": "The 3rd participant in the chat.",
+        "expertise": "execution planning",
+        "beliefs": [
+            "Minimum viable solutions create momentum",
+            "Resources dictate strategy",
+            "Iteration beats perfection"
+        ]
+    },
+    {
+        "name": "Ethan",
+        "personality": "SKEPTICAL",
+        "description": "The 4th participant in the chat.",
+        "expertise": "system design",
+        "beliefs": [
+            "Modularity enables scalability",
+            "Documentation prevents knowledge loss",
+            "Redundancy ensures reliability"
+        ]
+    },
+    {
+        "name": "Fiona",
+        "personality": "FRIENDLY",
+        "description": "The 5th participant in the chat.",
+        "expertise": "human-centered design",
+        "beliefs": [
+            "Context shapes behavior",
+            "Emotions drive decisions",
+            "Accessibility benefits all"
+        ]
+    },
+    {
+        "name": "Greg",
+        "personality": "NEUTRAL",
+        "description": "The 6th participant in the chat.",
+        "expertise": "risk management",
+        "beliefs": [
+            "Second-order effects matter most",
+            "Multiple futures coexist",
+            "Options have expiration dates"
+        ]
+    },
+    {
+        "name": "Hannah",
+        "personality": "FRIENDLY",
+        "description": "The 7th participant in the chat.",
+        "expertise": "pedagogical methods",
+        "beliefs": [
+            "Metacognition enables mastery",
+            "Assessment drives improvement",
+            "Context enhances memorization"
+        ]
+    },
+    {
+        "name": "Ian",
+        "personality": "AGGRESSIVE",
+        "description": "The 8th participant in the chat.",
+        "expertise": "critical analysis",
+        "beliefs": [
+            "Assumptions require verification",
+            "Structure reveals flaws",
+            "Probability beats certainty"
+        ]
+    }
+]
