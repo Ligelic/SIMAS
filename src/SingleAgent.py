@@ -6,7 +6,12 @@ from utils.saver import save_evaluation_result
 from config.config import (
     DEFAULT_MMLU_SUBJECT, 
     TOTAL_PROBLEMS_TO_LOAD,
-    LLM_MODEL
+    LLM_MODEL,
+    DEFAULT_MODE,
+    NONE_ALL,
+    NONE_PERSONALITY,
+    NONE_EXPERTISE,
+    NONE_BELIEF
 )
 from statistics import mean
 
@@ -46,8 +51,8 @@ def run_single_agent_session(
     
     return True
 
-def run_single_agent_experiment(subject: str, problem_count: int) -> float:
-    """Run a single experiment with one agent and return accuracy"""
+def run_single_agent_experiment(subject: str, problem_count: int, agent_mode: int = DEFAULT_MODE) -> tuple:
+    """Run a single experiment with one agent and return accuracy and token usage"""
     chat_manager = ChatManager()
     agent_factory = AgentFactory()
     
@@ -57,10 +62,18 @@ def run_single_agent_experiment(subject: str, problem_count: int) -> float:
         total_problems=problem_count
     )
     
-    # Create single agent
-    agent = agent_factory.create_agents(1, subject=subject)[0]
+    # Create single agent with specified mode
+    if agent_mode == DEFAULT_MODE:
+        agent = agent_factory.create_agents(1, subject=subject, from_file=False)[0]
+    else:
+        agent = agent_factory.create_agents(1, subject=subject, from_file=True, mode=agent_mode)[0]
+        agent.mode = agent_mode
+
     print(f"\n=== Testing Agent ===")
     print(f"{agent.name}: {agent.description}")
+    
+    # Reset token counter
+    agent.llm_service.reset_token_count()
     
     # Run sessions
     session_num = 1
@@ -73,29 +86,36 @@ def run_single_agent_experiment(subject: str, problem_count: int) -> float:
         )
         
         if not success:
-            return problem_provider.get_accuracy()
+            return problem_provider.get_accuracy(), agent.llm_service.get_total_tokens()
             
         session_num += 1
         print(f"\nCurrent Accuracy: {problem_provider.get_accuracy():.2%}")
 
 def main_single_agent(subject: str = DEFAULT_MMLU_SUBJECT, 
                      problem_count: int = TOTAL_PROBLEMS_TO_LOAD,
-                     experiment_count: int = 3):
+                     experiment_count: int = 3,
+                     agent_mode: int = DEFAULT_MODE):
     print(f"Initializing Single-Agent Testing System...")
     print(f"Running {experiment_count} experiments...")
+    print(f"Mode: {agent_mode}")
     
     accuracies = []
+    token_usages = []
     for i in range(experiment_count):
         print(f"\n=== Experiment {i+1}/{experiment_count} ===")
-        accuracy = run_single_agent_experiment(
+        accuracy, tokens = run_single_agent_experiment(
             subject=subject,
-            problem_count=problem_count
+            problem_count=problem_count,
+            agent_mode=agent_mode
         )
         accuracies.append(accuracy)
+        token_usages.append(tokens)
         print(f"Experiment {i+1} Accuracy: {accuracy:.2%}")
+        print(f"Experiment {i+1} Token Usage: {tokens:,}")
     
     # Calculate statistics
     avg_accuracy = mean(accuracies)
+    avg_tokens = mean(token_usages)
     std_dev = (sum((x - avg_accuracy) ** 2 for x in accuracies) / len(accuracies)) ** 0.5
     
     # Print final results
@@ -103,10 +123,13 @@ def main_single_agent(subject: str = DEFAULT_MMLU_SUBJECT,
     print(f"Model: {LLM_MODEL}")
     print(f"Subject: {subject}")
     print(f"Mode: Single Agent")
+    print(f"Agent Mode: {agent_mode}")
     print(f"Total problems: {problem_count}")
     print(f"Individual Accuracies: {[f'{acc:.2%}' for acc in accuracies]}")
     print(f"Average Accuracy: {avg_accuracy:.2%}")
     print(f"Standard Deviation: {std_dev:.2%}")
+    print(f"Total Token Usage: {sum(token_usages):,}")
+    print(f"Average Token Usage per Experiment: {avg_tokens:,.0f}")
     
     # Save results
     save_evaluation_result(
@@ -115,12 +138,16 @@ def main_single_agent(subject: str = DEFAULT_MMLU_SUBJECT,
         max_rounds=1,
         problem_provider=None,
         model=LLM_MODEL,
+        agent_mode=agent_mode,
         metadata={
             "experiment_count": experiment_count,
             "individual_accuracies": accuracies,
             "average_accuracy": avg_accuracy,
             "std_deviation": std_dev,
-            "problem_count": problem_count
+            "problem_count": problem_count,
+            "token_usages": token_usages,
+            "total_tokens": sum(token_usages),
+            "avg_tokens_per_experiment": avg_tokens
         }
     )
 
@@ -130,10 +157,12 @@ if __name__ == "__main__":
     parser.add_argument('--subject', type=str, default=DEFAULT_MMLU_SUBJECT, help='MMLU subject')
     parser.add_argument('--problem_count', type=int, default=17, help='Number of problems to load')
     parser.add_argument('--experiments', type=int, default=3, help='Number of experiments to run')
+    parser.add_argument('--mode', type=int, default=DEFAULT_MODE, help='Agent mode')
     args = parser.parse_args()
     
     main_single_agent(
         subject=args.subject, 
         problem_count=args.problem_count,
-        experiment_count=args.experiments
+        experiment_count=args.experiments,
+        agent_mode=args.mode
     )
