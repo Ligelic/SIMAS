@@ -2,6 +2,7 @@ from agents.agent_factory import AgentFactory
 from chat.chat_manager import ChatManager
 from utils.ekar_provider import EKARProblemProvider
 from utils.mmlu_provider import MMLUProblemProvider
+from utils.aime25_provider import AIME2025ProblemProvider
 from utils.saver import save_evaluation_result
 from config.config import (
     DEFAULT_MMLU_SUBJECT, 
@@ -57,10 +58,19 @@ def run_single_agent_experiment(subject: str, problem_count: int, agent_mode: in
     agent_factory = AgentFactory()
     
     # Initialize problem provider
-    problem_provider = MMLUProblemProvider(
-        subject=subject,
+    if subject == 'e-kar':
+        problem_provider = EKARProblemProvider(
         total_problems=problem_count
     )
+    elif subject == 'aime2025':
+        problem_provider = AIME2025ProblemProvider(
+        total_problems=problem_count
+    )
+    else:
+        problem_provider = MMLUProblemProvider(
+            subject=subject,
+            total_problems=problem_count
+        )
     
     # Create single agent with specified mode
     if agent_mode == DEFAULT_MODE:
@@ -164,5 +174,5 @@ if __name__ == "__main__":
         subject=args.subject, 
         problem_count=args.problem_count,
         experiment_count=args.experiments,
-        agent_mode=args.mode
+        agent_mode=NONE_ALL
     )

@@ -1,0 +1,25 @@
+Model: qwen2.5:72b-instruct
+Subject: abstract_algebra
+Mode: Multi-Agent-Chat
+Agent Count: 6 | Rounds: 3
+Agent Mode: 2
+Derailment: None
+
+=== Experiment Summary (3 runs) ===
+Total problems: 17
+Individual Accuracies:
+Experiment 1: 52.94%
+Experiment 2: 52.94%
+Experiment 3: 52.94%
+
+Average Accuracy: 52.94%
+Standard Deviation: 0.00%
+
+Token Usage:
+Experiment 1: 264,108 tokens
+Experiment 2: 271,975 tokens
+Experiment 3: 272,949 tokens
+Total Tokens: 809,032
+Average Tokens per Experiment: 269,677
+
+

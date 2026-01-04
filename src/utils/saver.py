@@ -11,6 +11,7 @@ def save_evaluation_result(
     problem_provider: Optional[MMLUProblemProvider], 
     model: str, 
     disrupt_config: dict = None,
+    mode: str = 'Multi-Agent-Chat',
     agent_mode: int = DEFAULT_MODE,
     metadata: dict = None
 ):
@@ -40,6 +41,7 @@ def save_evaluation_result(
     with open(filepath, 'w', encoding='utf-8') as f:
         f.write(f"Model: {model}\n")
         f.write(f"Subject: {subject}\n")
+        f.write(f"Mode: {mode}\n")
         f.write(f"Agent Count: {agent_count} | Rounds: {max_rounds}\n")
         f.write(f"Agent Mode: {agent_mode}\n")
         f.write(f"Derailment: {disrupt_config}\n\n")

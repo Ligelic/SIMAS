@@ -1,3 +1,6 @@
-evaluate_result/
+/aime25/*
+/evaluate_result/*
+/mmlu/*
 src/__pycache__/
+/tests/
 __pycache__

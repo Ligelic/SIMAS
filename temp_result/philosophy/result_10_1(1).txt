@@ -1,0 +1,25 @@
+Model: llama3.1:70b
+Subject: philosophy
+Mode: Multi-Agent-Chat
+Agent Count: 2 | Rounds: 3
+Agent Mode: 3
+Derailment: None
+
+=== Experiment Summary (3 runs) ===
+Total problems: 17
+Individual Accuracies:
+Experiment 1: 82.35%
+Experiment 2: 82.35%
+Experiment 3: 76.47%
+
+Average Accuracy: 80.39%
+Standard Deviation: 2.77%
+
+Token Usage:
+Experiment 1: 82,319 tokens
+Experiment 2: 79,340 tokens
+Experiment 3: 82,350 tokens
+Total Tokens: 244,009
+Average Tokens per Experiment: 81,336
+
+

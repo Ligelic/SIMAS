@@ -1,0 +1,25 @@
+Model: llama3.1:70b
+Subject: formal_logic
+Mode: Multi-Agent-Chat
+Agent Count: 8 | Rounds: 3
+Agent Mode: 4
+Derailment: None
+
+=== Experiment Summary (3 runs) ===
+Total problems: 17
+Individual Accuracies:
+Experiment 1: 23.53%
+Experiment 2: 35.29%
+Experiment 3: 17.65%
+
+Average Accuracy: 25.49%
+Standard Deviation: 7.34%
+
+Token Usage:
+Experiment 1: 499,609 tokens
+Experiment 2: 510,914 tokens
+Experiment 3: 511,637 tokens
+Total Tokens: 1,522,160
+Average Tokens per Experiment: 507,387
+
+

@@ -1,0 +1,25 @@
+Model: qwen2.5:72b-instruct
+Subject: formal_logic
+Mode: Multi-Agent-Chat
+Agent Count: 6 | Rounds: 3
+Agent Mode: 4
+Derailment: None
+
+=== Experiment Summary (3 runs) ===
+Total problems: 17
+Individual Accuracies:
+Experiment 1: 64.71%
+Experiment 2: 47.06%
+Experiment 3: 58.82%
+
+Average Accuracy: 56.86%
+Standard Deviation: 7.34%
+
+Token Usage:
+Experiment 1: 240,362 tokens
+Experiment 2: 245,944 tokens
+Experiment 3: 246,991 tokens
+Total Tokens: 733,297
+Average Tokens per Experiment: 244,432
+
+

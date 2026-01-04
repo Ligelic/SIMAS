@@ -11,6 +11,7 @@ class LLMAgent(Agent):
         self.context_window: List[dict] = []
         self.current_round = 1
         self.max_rounds = 3
+        self.question_type = "N/A"
         self.belief_thoughts = belief_thoughts or []
         
         # Initialize beliefs with provided thoughts
@@ -59,6 +60,8 @@ class LLMAgent(Agent):
         if self.mode == DEFAULT_MODE:  # Default mode
             prompt = f"""You are {self.name}. Here is your description:
     {self.description}
+
+    Your personality is {self.personality.value}.
 
     Here are some thoughts you might have right now, along with your level of belief in them:
     {self.format_beliefs()}
@@ -123,9 +126,121 @@ class LLMAgent(Agent):
 
     New message received: {message.content} Sender: {message.sender.name}
     """
+        elif self.mode == NONE_PERSONALITY:  # None personality mode
+            prompt = f"""You are {self.name}. Here is your description:
+    {self.description}
+
+    Here are some thoughts you might have right now, along with your level of belief in them:
+    {self.format_beliefs()}
+
+    Here is your recent action history:
+    {self.format_action_history()}
+
+    Here are descriptions of all other roles:
+    {others_desc}
+
+    {round_context}
+
+    Current message:
+    {message_content}
+
+    Sender: {message.sender.name}
+
+    You should summarize and reflect on whether your history of actions was able to achieve your goal in one sentence. Follow "### Reflect Result:" with no "\n" in your response.
+    You should update your relationships with all other characters based on your personal description and action history, up or down by up to 0.1 points, and respond after "### Relationship Change:". Please use commas "," to link ratings of relationships between different roles. Do not include the "\n" in your responses.
+    Based on your personal description and history of actions, please update your Belief level for all ideas, up or down by a maximum of 0.1 points, and reply after "### Belief Change:". Please use commas "," to link the ratings of different beliefs, and do not include the "\n" in your responses.
+    You should strictly output the above content in the following format, in which the natural text should be directly replied after Reflect Result. The "Relationship Change" and the "Belief Change" should be directly output plus or minus or unchanged score (0) according to the order of input.
+    If your change to a character or belief is 0, you should also output it after "### Relationship Change:" or "### Belief Change:".
+    Note that you should output !<INPUT 5>! values after "### Relationship Change:" and !<INPUT 6>! values after "### Belief Change:".
+    Note that it may be mentioned in the history that you strongly supported a character, but you should not give credit to a character just because you supported that character. You need to weigh whether all the characters will benefit you and score them based on how much they potentially benefit you.
+
+    Below is a demonstration of your output:
+    ### Reflect Result: xxxx
+    ### Relationship Change: xxx: 0.1
+    ### Belief Change: xxx: -0.1
+    Reminder:
+    1. Your Reflect Result output must be in English.
+    2. If you think it's no need to change "Relationship Change" or "Belief Change", you should use unchanged score (0).
+
+    After providing the Reflect Result, Relationship Change, and Belief Change, please provide your actual response to the conversation with "### Actual Response: " as the prefix.
+
+    """
+        elif self.mode == NONE_EXPERTISE:  # None expertise mode
+            prompt = f"""You are {self.name}. Here is your description:
+    {self.description}
+
+    Your personality is {self.personality.value}.
+
+    Here are some thoughts you might have right now, along with your level of belief in them:
+    {self.format_beliefs()}
+
+    Here is your recent action history:
+    {self.format_action_history()}
+
+    Here are descriptions of all other roles:
+    {others_desc}
+
+    {round_context}
+
+    Current message:
+    {message_content}
+
+    Sender: {message.sender.name}
+
+    You should summarize and reflect on whether your history of actions was able to achieve your goal in one sentence. Follow "### Reflect Result:" with no "\n" in your response.
+    You should update your relationships with all other characters based on your personal description and action history, up or down by up to 0.1 points, and respond after "### Relationship Change:". Please use commas "," to link ratings of relationships between different roles. Do not include the "\n" in your responses.
+    Based on your personal description and history of actions, please update your Belief level for all ideas, up or down by a maximum of 0.1 points, and reply after "### Belief Change:". Please use commas "," to link the ratings of different beliefs, and do not include the "\n" in your responses.
+    You should strictly output the above content in the following format, in which the natural text should be directly replied after Reflect Result. The "Relationship Change" and the "Belief Change" should be directly output plus or minus or unchanged score (0) according to the order of input.
+    If your change to a character or belief is 0, you should also output it after "### Relationship Change:" or "### Belief Change:".
+    Note that you should output !<INPUT 5>! values after "### Relationship Change:" and !<INPUT 6>! values after "### Belief Change:".
+    Note that it may be mentioned in the history that you strongly supported a character, but you should not give credit to a character just because you supported that character. You need to weigh whether all the characters will benefit you and score them based on how much they potentially benefit you.
+
+    Below is a demonstration of your output:
+    ### Reflect Result: xxxx
+    ### Relationship Change: xxx: 0.1
+    ### Belief Change: xxx: -0.1
+    Reminder:
+    1. Your Reflect Result output must be in English.
+    2. If you think it's no need to change "Relationship Change" or "Belief Change", you should use unchanged score (0).
+
+    After providing the Reflect Result, Relationship Change, and Belief Change, please provide your actual response to the conversation with "### Actual Response: " as the prefix. Your response should be natural and aligned with your personality.
+
+    """
+        elif self.mode == NONE_BELIEF:  # None belief mode
+            prompt = f"""You are {self.name}. Here is your description:
+    {self.description}
+
+    Your personality is {self.personality.value}.
+
+    Here is your recent action history:
+    {self.format_action_history()}
+
+    Here are descriptions of all other roles:
+    {others_desc}
+
+    {round_context}
+
+    Current message:
+    {message_content}
+
+    You should summarize and reflect on whether your history of actions was able to achieve your goal in one sentence. Follow "### Reflect Result:" with no "\n" in your response.
+    You should update your relationships with all other characters based on your personal description and action history, up or down by up to 0.1 points, and respond after "### Relationship Change:". Please use commas "," to link ratings of relationships between different roles. Do not include the "\n" in your responses.
+    Below is a demonstration of your output:
+    ### Reflect Result: xxxx
+    ### Relationship Change: xxx: 0.1
+
+    Reminder:
+    1. Your Reflect Result output must be in English.
+
+    After providing the Reflect Result, please provide your response with "### Actual Response: " as the prefix. Your response should be natural and aligned with your personality.
+
+    New message received: {message.content} Sender: {message.sender.name}
+    """
         # print(prompt)
         if self.current_round == self.max_rounds:
-            prompt += "Please state your final answer choice (A, B, C, or D) with explanation."
+            prompt += """Please state your final answer in accordance with the type of question, such as {"choice (A, B, C, or D) for a multiple-choice question" if self.question_type == 'multiple_choice' else "direct answer like \"100\" for a short-answer question"} with explanation.
+            Question Type: {self.question_type}
+            """
 
         return prompt
 
@@ -269,7 +384,7 @@ Your summary should be thorough yet concise, and maintain your {self.personality
 
 Please structure your response as (without '[]' in your response):
 ### Answer
-[Your final answer for the given problem in accordance with the required form, such as A, B, C, or D for a multiple-choice question] 
+[Your final answer for the given problem in accordance with the required form, such as {"A, B, C, or D for a multiple-choice question" if self.question_type == 'multiple_choice' else "direct answer like '100' for a short-answer question"}, without any explanation. Question Type: {self.question_type}] 
 
 ### Summary
 [Your comprehensive summary]
@@ -288,3 +403,45 @@ Please structure your response as (without '[]' in your response):
         # print(f"\n{self.name}'s Final Summary:")
         # print(summary_response)
         return final_answer
+    
+    def generate_reason_prompt(self, message: Message) -> str:
+        
+        
+        return f"""You are {self.name}. Please solve the following problem in a reasoning manner.
+{message.content}
+
+Please structure your response as (without '[]' in your response):
+### Reasoning
+[Your reasoning process for arriving at the final answer, including any calculations or logical deductions]
+
+### Answer
+[Your final answer for the given problem in accordance with the required form, such as {"A, B, C, or D for a multiple-choice question" if self.question_type == 'multiple_choice' else "direct answer like '100' for a short-answer question"},  without any explanation] 
+"""
+
+    def receive_reason_request(self, message: Message) -> str:
+        prompt = self.generate_reason_prompt(message)
+        response = self.llm_service.get_response(prompt)
+        final_answer = self.process_llm_response(response)
+        print(f"\n{self.name}'s Reasoning Process: {response}")
+        print(f"\n{self.name}'s Answer: {final_answer}")
+        # print(f"\n{self.name}'s Final Summary:")
+        # print(summary_response)
+        return final_answer
+    
+    def receive_cot_request(self, message: Message) -> str:
+        prompt = message.content
+        response = self.llm_service.get_response(prompt)
+        # 提取最终回答部分
+        if "### 最终回答" in response:
+            parts = response.split("### 最终回答")
+            if len(parts) > 1:
+                final_answer = parts[1].strip()
+            else:
+                final_answer = response
+        else:
+            final_answer = response
+            
+        print(f"\n{self.name}的开放性答案总结：")
+        print(response[:500])  # 只打印前500字符
+        
+        return response

@@ -1,0 +1,25 @@
+Model: llama3.1:70b
+Subject: e-kar
+Mode: Multi-Agent-Chat
+Agent Count: 7 | Rounds: 3
+Agent Mode: 1
+Derailment: None
+
+=== Experiment Summary (3 runs) ===
+Total problems: 17
+Individual Accuracies:
+Experiment 1: 23.53%
+Experiment 2: 5.88%
+Experiment 3: 29.41%
+
+Average Accuracy: 19.61%
+Standard Deviation: 10.00%
+
+Token Usage:
+Experiment 1: 378,314 tokens
+Experiment 2: 370,688 tokens
+Experiment 3: 380,815 tokens
+Total Tokens: 1,129,817
+Average Tokens per Experiment: 376,606
+
+

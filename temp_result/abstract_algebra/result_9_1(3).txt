@@ -1,0 +1,25 @@
+Model: llama3.1:70b
+Subject: abstract_algebra
+Mode: Multi-Agent-Chat
+Agent Count: 4 | Rounds: 3
+Agent Mode: 2
+Derailment: None
+
+=== Experiment Summary (3 runs) ===
+Total problems: 17
+Individual Accuracies:
+Experiment 1: 23.53%
+Experiment 2: 23.53%
+Experiment 3: 29.41%
+
+Average Accuracy: 25.49%
+Standard Deviation: 2.77%
+
+Token Usage:
+Experiment 1: 196,201 tokens
+Experiment 2: 189,917 tokens
+Experiment 3: 196,627 tokens
+Total Tokens: 582,745
+Average Tokens per Experiment: 194,248
+
+

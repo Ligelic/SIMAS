@@ -1,0 +1,25 @@
+Model: qwen2.5:72b-instruct
+Subject: college_physics
+Mode: Multi-Agent-Chat
+Agent Count: 2 | Rounds: 3
+Agent Mode: 2
+Derailment: None
+
+=== Experiment Summary (3 runs) ===
+Total problems: 17
+Individual Accuracies:
+Experiment 1: 76.47%
+Experiment 2: 70.59%
+Experiment 3: 64.71%
+
+Average Accuracy: 70.59%
+Standard Deviation: 4.80%
+
+Token Usage:
+Experiment 1: 74,731 tokens
+Experiment 2: 74,763 tokens
+Experiment 3: 74,640 tokens
+Total Tokens: 224,134
+Average Tokens per Experiment: 74,711
+
+

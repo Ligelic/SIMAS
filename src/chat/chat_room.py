@@ -15,6 +15,7 @@ class ChatRoom:
         self.is_completed = False  # Add flag to track completion status
         self.current_round_history = [f"" for i in range(self.max_rounds)]
         self.last_round_history = ''
+        self.final_answer = ''
 
     def add_agent(self, agent):
         if agent not in self.agents:
@@ -63,6 +64,7 @@ class ChatRoom:
         #         round_messages.append(msg)
         # return round_messages
 
+
     def broadcast_message(self, message):
         """Handle message broadcasting and round transitions."""
         if self.is_completed:
@@ -76,9 +78,6 @@ class ChatRoom:
             
             if next_index < len(self.agents):
                 # Within current round
-                # round_messages = self._get_current_round_messages()
-                # round_header = f"[Round {self.current_round}/{self.max_rounds}]"
-                # content = self.format_round_messages(round_messages)
                 round_header = f"[Round {self.current_round}/{self.max_rounds}]"
                 if next_index == 0:
                     content = self.last_round_history
@@ -95,15 +94,12 @@ class ChatRoom:
                 if self.current_round < self.max_rounds:
                     self.last_round_history = self.current_round_history[self.current_round - 1]
                     self.current_round += 1
-                    # print(f"\n=== Starting Round {self.current_round}/{self.max_rounds} ===")
                     round_header = (
                         f"[Round {self.current_round}/{self.max_rounds}]"
                         + (" - Final Round! Please provide your concluding thoughts."
-                           if self.current_round == self.max_rounds else "")
+                        if self.current_round == self.max_rounds else "")
                     )
                     
-                    # last_round_messages = self._get_last_round_messages()
-                    # content = self.format_round_messages(last_round_messages)
                     content = self.last_round_history
                     
                     self.send_direct_message(
@@ -114,22 +110,85 @@ class ChatRoom:
                 else:
                     # Handle final round completion
                     self.is_completed = True
-                    # print(f"\n=== Discussion completed after {self.max_rounds} rounds ===")
-                    # print("Requesting final summary from first agent...")
                     
                     final_messages = self._get_current_round_messages()
                     summary_request = Message(
                         sender=None,
                         content="Please provide a comprehensive summary of our discussion, "
-                               "including the key points and conclusions from all participants.",
+                            "including the key points and conclusions from all participants.",
                         chat_room=self
                     )
-                    final_answer = self.agents[0].receive_final_summary_request(summary_request, final_messages)
+                    
+                    # 【核心修改】支持不同类型的智能体
+                    first_agent = self.agents[0]
+                    final_answer = ""
+                    
+                    # 判断问题类型
                     problem = self.metadata.get('current_problem')
-                    if problem:
-                        is_correct = self.metadata.get('problem_provider').record_answer(problem, final_answer)
-                        # print(f"Answer {'correct' if is_correct else 'incorrect'} "
-                        #     f"(Expected: {problem.answer})")
+                    question_type = "general"
+                    if problem and hasattr(problem, 'metadata'):
+                        question_type = problem.metadata.get('type', 'general')
+                    
+                    # 根据问题类型调用不同的总结方法
+                    if question_type == "code":
+                        # 代码问题
+                        if hasattr(first_agent, 'receive_code_final_summary'):
+                            print(f"  检测到代码问题专用Agent({first_agent.name})，调用专用总结方法。")
+                            try:
+                                final_answer = first_agent.receive_code_final_summary(
+                                    message=summary_request, 
+                                    final_round_messages=final_messages
+                                )
+                            except Exception as e:
+                                print(f"  调用代码总结方法失败: {e}，回退到标准方法。")
+                                final_answer = first_agent.receive_final_summary_request(
+                                    summary_request, 
+                                    final_messages
+                                )
+                        else:
+                            # 回退到标准方法
+                            print(f"  使用标准Agent({first_agent.name})的总结方法处理代码问题。")
+                            final_answer = first_agent.receive_final_summary_request(
+                                summary_request, 
+                                final_messages
+                            )
+                    elif question_type == "open_ended":
+                        # 开放性问题
+                        if hasattr(first_agent, 'receive_open_ended_final_summary'):
+                            print(f"  检测到开放性问题专用Agent({first_agent.name})，调用专用总结方法。")
+                            try:
+                                final_answer = first_agent.receive_open_ended_final_summary(
+                                    message=summary_request, 
+                                    final_round_messages=final_messages
+                                )
+                            except Exception as e:
+                                print(f"  调用开放性问题总结方法失败: {e}，回退到标准方法。")
+                                final_answer = first_agent.receive_final_summary_request(
+                                    summary_request, 
+                                    final_messages
+                                )
+                        else:
+                            print(f"  使用标准Agent({first_agent.name})的总结方法处理开放性问题。")
+                            final_answer = first_agent.receive_final_summary_request(
+                                summary_request, 
+                                final_messages
+                            )
+                    else:
+                        # 一般问题或其他类型
+                        print(f"  使用标准Agent({first_agent.name})的总结方法。")
+                        final_answer = first_agent.receive_final_summary_request(
+                            summary_request, 
+                            final_messages
+                        )
+                    
+                    # 存储最终答案
+                    self.final_answer = final_answer
+                    print(f"  最终总结已生成，长度：{len(final_answer)}字符。")
+                    
+                    problem = self.metadata.get('current_problem')
+                    problem_provider = self.metadata.get('problem_provider')
+                    if problem and problem_provider:
+                        is_correct = problem_provider.record_answer(problem, final_answer)
     
     def broadcast_system_message(self, content: str):
         message = Message(sender=None, content=content)

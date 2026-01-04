@@ -1,0 +1,25 @@
+Model: llama3.1:70b
+Subject: global_facts
+Mode: Multi-Agent-Chat
+Agent Count: 6 | Rounds: 3
+Agent Mode: 2
+Derailment: None
+
+=== Experiment Summary (3 runs) ===
+Total problems: 17
+Individual Accuracies:
+Experiment 1: 29.41%
+Experiment 2: 11.76%
+Experiment 3: 17.65%
+
+Average Accuracy: 19.61%
+Standard Deviation: 7.34%
+
+Token Usage:
+Experiment 1: 327,322 tokens
+Experiment 2: 343,421 tokens
+Experiment 3: 338,216 tokens
+Total Tokens: 1,008,959
+Average Tokens per Experiment: 336,320
+
+

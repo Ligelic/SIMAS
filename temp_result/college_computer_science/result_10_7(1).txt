@@ -1,0 +1,25 @@
+Model: llama3.1:70b
+Subject: college_computer_science
+Mode: Multi-Agent-Chat
+Agent Count: 6 | Rounds: 3
+Agent Mode: 3
+Derailment: None
+
+=== Experiment Summary (3 runs) ===
+Total problems: 17
+Individual Accuracies:
+Experiment 1: 41.18%
+Experiment 2: 47.06%
+Experiment 3: 47.06%
+
+Average Accuracy: 45.10%
+Standard Deviation: 2.77%
+
+Token Usage:
+Experiment 1: 335,028 tokens
+Experiment 2: 338,823 tokens
+Experiment 3: 336,853 tokens
+Total Tokens: 1,010,704
+Average Tokens per Experiment: 336,901
+
+

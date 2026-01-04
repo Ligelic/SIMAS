@@ -1,0 +1,25 @@
+Model: qwen2.5:72b-instruct
+Subject: global_facts
+Mode: Multi-Agent-Chat
+Agent Count: 2 | Rounds: 3
+Agent Mode: 2
+Derailment: None
+
+=== Experiment Summary (3 runs) ===
+Total problems: 17
+Individual Accuracies:
+Experiment 1: 41.18%
+Experiment 2: 29.41%
+Experiment 3: 29.41%
+
+Average Accuracy: 33.33%
+Standard Deviation: 5.55%
+
+Token Usage:
+Experiment 1: 71,719 tokens
+Experiment 2: 71,602 tokens
+Experiment 3: 72,123 tokens
+Total Tokens: 215,444
+Average Tokens per Experiment: 71,815
+
+

@@ -1,0 +1,25 @@
+Model: qwen2.5:72b-instruct
+Subject: e-kar
+Mode: Multi-Agent-Chat
+Agent Count: 5 | Rounds: 3
+Agent Mode: 1
+Derailment: None
+
+=== Experiment Summary (3 runs) ===
+Total problems: 17
+Individual Accuracies:
+Experiment 1: 23.53%
+Experiment 2: 29.41%
+Experiment 3: 47.06%
+
+Average Accuracy: 33.33%
+Standard Deviation: 10.00%
+
+Token Usage:
+Experiment 1: 175,458 tokens
+Experiment 2: 169,062 tokens
+Experiment 3: 170,182 tokens
+Total Tokens: 514,702
+Average Tokens per Experiment: 171,567
+
+

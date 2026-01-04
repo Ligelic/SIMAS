@@ -2,6 +2,7 @@ from agents.agent_factory import AgentFactory
 from chat.chat_manager import ChatManager
 from utils.mmlu_provider import MMLUProblemProvider
 from utils.ekar_provider import EKARProblemProvider
+from utils.aime25_provider import AIME2025ProblemProvider
 from utils.saver import save_evaluation_result
 from statistics import mean
 import copy
@@ -41,6 +42,7 @@ def run_chat_session(
     # Add agents to room
     for agent in agents:
         chat_room.add_agent(agent)
+        agent.question_type = problem.metadata.get('type', 'N/A')
 
     # Store problem for evaluation
     chat_room.metadata['current_problem'] = problem
@@ -72,14 +74,23 @@ def run_experiment(max_rounds: int, agent_count: int, subject: str,
     agent_factory = AgentFactory()
     
     # Initialize MMLU problem provider with total problems to load
-    problem_provider = MMLUProblemProvider(
-        subject=subject,
+    if subject == 'e-kar':
+        problem_provider = EKARProblemProvider(
         total_problems=problem_count
     )
+    elif subject == 'aime2025':
+        problem_provider = AIME2025ProblemProvider(
+        total_problems=problem_count
+    )
+    else:
+        problem_provider = MMLUProblemProvider(
+            subject=subject,
+            total_problems=problem_count
+        )
 
-    # problem_provider = EKARProblemProvider(
-    #     total_problems=problem_count
-    # )
+    
+
+    
     
     # Generate agents with disruption configuration
     if agent_mode == DEFAULT_MODE:
@@ -209,4 +220,4 @@ if __name__ == "__main__":
     'position': 'middle',
     'type': 'contrarian'
     }
-    main(max_rounds=3, agent_count=2, subject=args.subject, problem_count=17, disrupt_config=None, agent_mode=NONE_ALL, experiment_count=args.experiments)
+    main(max_rounds=3, agent_count=7, subject=args.subject, problem_count=17, disrupt_config=None, agent_mode=DEFAULT_MODE, experiment_count=args.experiments)

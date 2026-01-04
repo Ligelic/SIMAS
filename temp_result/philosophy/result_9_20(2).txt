@@ -1,0 +1,25 @@
+Model: qwen2.5:72b-instruct
+Subject: philosophy
+Mode: Multi-Agent-Chat
+Agent Count: 4 | Rounds: 3
+Agent Mode: 4
+Derailment: None
+
+=== Experiment Summary (3 runs) ===
+Total problems: 17
+Individual Accuracies:
+Experiment 1: 94.12%
+Experiment 2: 94.12%
+Experiment 3: 94.12%
+
+Average Accuracy: 94.12%
+Standard Deviation: 0.00%
+
+Token Usage:
+Experiment 1: 146,639 tokens
+Experiment 2: 137,939 tokens
+Experiment 3: 137,278 tokens
+Total Tokens: 421,856
+Average Tokens per Experiment: 140,619
+
+

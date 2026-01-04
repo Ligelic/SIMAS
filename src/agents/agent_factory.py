@@ -1,5 +1,7 @@
 from typing import Dict, List, Optional
 from .agent import Agent, Personality
+from agents.open_ended_llm_agent import OpenEndedLLMAgent
+from agents.code_llm_agent import CodeLLMAgent
 from .llm_agent import LLMAgent
 from utils.llm_service import LLMService
 from config.config import DEFAULT_MMLU_SUBJECT, DEFAULT_MODE, NONE_ALL, NONE_PERSONALITY, NONE_EXPERTISE, NONE_BELIEF
@@ -53,7 +55,7 @@ class AgentFactory:
     Existing agent descriptions: {description}
 
     Please provide the following in JSON format:
-    1. name: A simple name for the agent (unique from existing agents)
+    1. name: A simple name for the agent (unique from existing agents, cannot be duplicated with an existing name)
     2. personality: {"AGGRESSIVE" if is_disruptor else "One of [FRIENDLY, SKEPTICAL, NEUTRAL, AGGRESSIVE]"}
     3. description: {"A brief description of the agent in English about his role of derailing the discussion" if is_disruptor else "A brief description in English of the agent's characteristics and role in discussions"}
     4. expertise: The agent's main strength in problem solving of {subject}
@@ -73,6 +75,7 @@ class AgentFactory:
     }}
 
     Remember to generate descriptions in English.
+    You mustn't give the agent any existing name.
     Make sure each agent has unique beliefs that align with their role and expertise.
     Make sure your output is and only is valid JSON format, without any other words before or after the JSON content.
     You must generate the last agent with the personality AGGRESSIVE and relevant description. 
@@ -95,11 +98,15 @@ class AgentFactory:
                 ]
             }
 
-    def create_agent(self, name: str, personality: Personality, description: str, belief_thoughts: List[str] = None) -> Agent:
+    def create_agent(self, name: str, personality: Personality, description: str, belief_thoughts: List[str] = None, agent_class=None) -> Agent:
         if name in self.agents:
             raise ValueError(f"Agent '{name}' already exists")
             
-        agent = LLMAgent(
+        if agent_class is None:
+            from .llm_agent import LLMAgent  # 默认导入
+            agent_class = LLMAgent
+        
+        agent = agent_class(
             name=name, 
             personality=personality, 
             description=description,
@@ -109,7 +116,7 @@ class AgentFactory:
         return agent
 
     def create_agents(self, count: int, subject: str = DEFAULT_MMLU_SUBJECT, 
-                     disrupt_config: dict = None, from_file: bool = False, mode: int = DEFAULT_MODE) -> List[Agent]:
+                     disrupt_config: dict = None, from_file: bool = False, mode: int = DEFAULT_MODE, agent_class=None) -> List[Agent]:
         """
         Create specified number of agents either from LLM or config file
         Args:
@@ -120,9 +127,9 @@ class AgentFactory:
         """
         if from_file:
             return self._load_agents_from_file(count, subject, mode)
-        return self._create_agents_from_llm(count, subject, disrupt_config)
+        return self._create_agents_from_llm(count, subject, disrupt_config, agent_class=agent_class)
 
-    def _create_agents_from_llm(self, count: int, subject: str, disrupt_config: dict = None) -> List[Agent]:
+    def _create_agents_from_llm(self, count: int, subject: str, disrupt_config: dict = None, agent_class=None) -> List[Agent]:
         """Create agents using LLM"""
         agents = []
         names = []
@@ -138,9 +145,7 @@ class AgentFactory:
             agent_info = self._generate_agent_description(i + 1, count, subject=subject, 
                                                         name=names, description=descriptions, 
                                                         disrupt_config=disrupt_config)
-            if agent_info["name"] not in names:
-                names.append(agent_info["name"])
-                descriptions.append(agent_info["description"])
+            
                 
             while agent_info["name"] in self.agents:
                 agent_info = self._generate_agent_description(i + 1, count, subject=subject, 
@@ -151,9 +156,13 @@ class AgentFactory:
                 name=agent_info["name"],
                 personality=personalities[agent_info["personality"]],
                 description=f"{agent_info['description']} (expertise：{agent_info['expertise']})",
-                belief_thoughts=agent_info.get("beliefs", [])
+                belief_thoughts=agent_info.get("beliefs", []),
+                agent_class=agent_class
             )
             agents.append(agent)
+
+            names.append(agent_info["name"])
+            descriptions.append(agent_info["description"])
 
         return agents
 
@@ -190,7 +199,7 @@ class AgentFactory:
             for i in range(count):
                 agent_info = agents_config[i]
                 # 检查必需字段
-                if mode == DEFAULT_MODE:
+                if mode == DEFAULT_MODE or mode == NONE_BELIEF or mode == NONE_PERSONALITY:
                     required_fields = ["name", "personality", "description", "expertise"]
                     for field in required_fields:
                         if field not in agent_info:
