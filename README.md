@@ -1,7 +1,3 @@
-Collecting workspace information`@workspace` accuracy and speed can be improved by building a remote workspace index. [Learn More](https://aka.ms/vscode-copilot-workspace-remote-index)
-
-Build remote workspace index
-
 # SIMAS: Smart Intelligent Multi-Agent System
 
 A sophisticated multi-agent conversation framework designed for collaborative problem-solving across diverse domains including mathematics, knowledge reasoning, open-ended discussions, and code generation.
@@ -72,7 +68,7 @@ src/
 
 1. Clone the repository:
 ```bash
-git clone <repository-url>
+git clone https://github.com/Ligelic/SIMAS.git
 cd SIMAS
 ```
 
@@ -107,7 +103,7 @@ main(
     max_rounds=3,           # Number of discussion rounds
     agent_count=3,          # Number of agents
     subject='college_physics',  # Problem subject
-    problem_count=10,       # Number of problems
+    problem_count=17,       # Number of problems
     experiment_count=3      # Number of experiments
 )
 ```
